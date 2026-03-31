@@ -7,11 +7,73 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Sahelian Horizon mapped to shadcn variables */
+    --background: 30 100% 97%;
+    --foreground: 25 10% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 25 10% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 10% 11%;
+    --primary: 22 100% 31%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 100% 25%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 30 30% 93%;
+    --muted-foreground: 16 20% 28%;
+    --accent: 191 82% 25%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 41%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 22 30% 79%;
+    --input: 30 20% 91%;
+    --ring: 22 100% 31%;
+    --radius: 0.75rem;
+    --sidebar: 30 50% 96%;
+    --sidebar-foreground: 25 10% 11%;
+    --sidebar-primary: 22 100% 31%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 30 30% 93%;
+    --sidebar-accent-foreground: 25 10% 11%;
+    --sidebar-border: 22 30% 79%;
+    --sidebar-ring: 22 100% 31%;
+  }
+
+  /* Default theme CSS vars (terracotta) — set before JS loads to prevent FOUC */
+  :root {
+    --theme-primary: #9c3d00;
+    --theme-primary-container: #c2500a;
+    --theme-secondary: #815500;
+    --theme-secondary-container: #feb234;
+    --theme-tertiary: #0c6475;
+    --theme-tertiary-container: #abedff;
+    --theme-surface: #fff8f1;
+    --theme-surface-container-lowest: #ffffff;
+    --theme-surface-container-low: #f9f3eb;
+    --theme-surface-container: #f3ede5;
+    --theme-surface-container-high: #eee7df;
+    --theme-on-surface: #1e1b17;
+    --theme-on-surface-variant: #584239;
+    --theme-outline-variant: #dfc0b3;
+    --theme-primary-fixed: #ffdbcc;
+    --theme-error: #ba1a1a;
+    --theme-error-container: #ffdad6;
+  }
+
   html {
     font-family: 'Inter', sans-serif;
-    color: #1e1b17;
-    background-color: #fff8f1;
-    @apply font-sans;
+    color: var(--theme-on-surface, #1e1b17);
+    background-color: var(--theme-surface, #fff8f1);
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   /* Sandy grain texture overlay */
@@ -27,89 +89,11 @@
     opacity: 0.03;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   }
-  .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-  }
-  :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-  }
-  .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
 
 @layer components {
-  /* Glassmorphism utility */
   .glass {
-    background: rgba(255, 248, 241, 0.8);
+    background: color-mix(in srgb, var(--theme-surface, #fff8f1) 80%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
@@ -120,16 +104,14 @@
     -webkit-backdrop-filter: blur(16px);
   }
 
-  /* Signature gradient */
   .gradient-primary {
-    background: linear-gradient(135deg, #9c3d00, #c2500a);
+    background: linear-gradient(135deg, var(--theme-primary, #9c3d00), var(--theme-primary-container, #c2500a));
   }
 
   .gradient-golden {
-    background: linear-gradient(135deg, #815500, #feb234);
+    background: linear-gradient(135deg, var(--theme-secondary, #815500), var(--theme-secondary-container, #feb234));
   }
 
-  /* Image scrim (bottom-up gradient for text readability on images) */
   .scrim-bottom {
     background: linear-gradient(to top, rgba(30, 27, 23, 0.7) 0%, transparent 100%);
   }

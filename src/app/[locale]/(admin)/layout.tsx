@@ -1,5 +1,6 @@
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function AdminLayout({
   children,
@@ -13,6 +14,7 @@ export default function AdminLayout({
         <AdminHeader />
         <main className="flex-1 p-6 lg:p-8">{children}</main>
       </div>
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 }

@@ -10,11 +10,11 @@ const config: Config = {
     extend: {
       /* ── Sahelian Horizon Design System ── */
       colors: {
-        // Primary — Terracotta
+        // Primary — Terracotta (defaults, overridden by CSS vars)
         primary: {
-          DEFAULT: '#9c3d00',
-          container: '#c2500a',
-          fixed: '#ffdbcc',
+          DEFAULT: 'var(--theme-primary, #9c3d00)',
+          container: 'var(--theme-primary-container, #c2500a)',
+          fixed: 'var(--theme-primary-fixed, #ffdbcc)',
           'fixed-dim': '#ffb695',
         },
         'on-primary': {
@@ -25,8 +25,8 @@ const config: Config = {
         },
         // Secondary — Golden Hour
         secondary: {
-          DEFAULT: '#815500',
-          container: '#feb234',
+          DEFAULT: 'var(--theme-secondary, #815500)',
+          container: 'var(--theme-secondary-container, #feb234)',
           fixed: '#ffddb2',
           'fixed-dim': '#ffb94c',
         },
@@ -37,8 +37,8 @@ const config: Config = {
         },
         // Tertiary — Atlantic Teal
         tertiary: {
-          DEFAULT: '#0c6475',
-          container: '#abedff',
+          DEFAULT: 'var(--theme-tertiary, #0c6475)',
+          container: 'var(--theme-tertiary-container, #abedff)',
           fixed: '#abedff',
           'fixed-dim': '#8bd1e4',
         },
@@ -48,29 +48,29 @@ const config: Config = {
         },
         // Surfaces
         surface: {
-          DEFAULT: '#fff8f1',
+          DEFAULT: 'var(--theme-surface, #fff8f1)',
           dim: '#dfd9d1',
           variant: '#e8e1da',
           tint: '#a23f00',
-          'container-lowest': '#ffffff',
-          'container-low': '#f9f3eb',
-          container: '#f3ede5',
-          'container-high': '#eee7df',
+          'container-lowest': 'var(--theme-surface-container-lowest, #ffffff)',
+          'container-low': 'var(--theme-surface-container-low, #f9f3eb)',
+          container: 'var(--theme-surface-container, #f3ede5)',
+          'container-high': 'var(--theme-surface-container-high, #eee7df)',
           'container-highest': '#e8e1da',
         },
         'on-surface': {
-          DEFAULT: '#1e1b17',
-          variant: '#584239',
+          DEFAULT: 'var(--theme-on-surface, #1e1b17)',
+          variant: 'var(--theme-on-surface-variant, #584239)',
         },
         // Outline
         outline: {
           DEFAULT: '#897267',
-          variant: '#dfc0b3',
+          variant: 'var(--theme-outline-variant, #dfc0b3)',
         },
         // Error
         error: {
-          DEFAULT: '#ba1a1a',
-          container: '#ffdad6',
+          DEFAULT: 'var(--theme-error, #ba1a1a)',
+          container: 'var(--theme-error-container, #ffdad6)',
         },
         'on-error': {
           DEFAULT: '#ffffff',
@@ -80,8 +80,8 @@ const config: Config = {
         'inverse-surface': '#33302b',
         'inverse-primary': '#ffb695',
         // Background
-        background: '#fff8f1',
-        'on-background': '#1e1b17',
+        background: 'var(--theme-surface, #fff8f1)',
+        'on-background': 'var(--theme-on-surface, #1e1b17)',
       },
       fontFamily: {
         heading: ['Epilogue', 'sans-serif'],
@@ -101,8 +101,8 @@ const config: Config = {
         '2xl': '2rem',
       },
       boxShadow: {
-        ambient: '0 20px 40px rgba(156, 61, 0, 0.08)',
-        'ambient-lg': '0 30px 60px rgba(156, 61, 0, 0.12)',
+        ambient: '0 20px 40px color-mix(in srgb, var(--theme-primary, #9c3d00) 8%, transparent)',
+        'ambient-lg': '0 30px 60px color-mix(in srgb, var(--theme-primary, #9c3d00) 12%, transparent)',
       },
     },
   },

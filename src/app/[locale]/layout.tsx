@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Epilogue, Inter } from 'next/font/google';
 import { locales } from '@/i18n/config';
+import ThemeProvider from '@/components/shared/ThemeProvider';
 import '@/styles/globals.css';
 
 const epilogue = Epilogue({
@@ -42,6 +43,7 @@ export default async function RootLayout({
     <html lang={locale} className={`${epilogue.variable} ${inter.variable}`}>
       <body className="bg-surface font-body text-on-surface antialiased">
         <NextIntlClientProvider messages={messages}>
+          <ThemeProvider />
           {children}
         </NextIntlClientProvider>
       </body>
