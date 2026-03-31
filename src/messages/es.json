@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "title": "Explore Senegal — Descubre el Alma de Senegal",
+    "description": "Circuitos auténticos en Senegal: Lac Rose, Isla de Gorée, Mbodienne, Baobab de Nianing y más."
+  },
+  "nav": {
+    "home": "Inicio",
+    "tours": "Nuestros Circuitos",
+    "destinations": "Destinos",
+    "about": "Sobre Nosotros",
+    "contact": "Contacto",
+    "bookNow": "Reservar un circuito",
+    "admin": "Área Admin"
+  },
+  "hero": {
+    "title": "Descubre el Alma de Senegal",
+    "subtitle": "Vive experiencias auténticas con un guía local apasionado. Desde las dunas del Lac Rose hasta las calles históricas de Gorée.",
+    "cta": "Ver nuestros circuitos",
+    "ctaSecondary": "Contáctenos"
+  },
+  "sections": {
+    "featuredTours": "Nuestros circuitos destacados",
+    "whyUs": "Viaja con el Alma de África",
+    "destinations": "Nuestros destinos",
+    "testimonials": "Lo que dicen nuestros viajeros",
+    "newsletter": "Mantente Conectado",
+    "newsletterSub": "Recibe nuestras últimas ofertas e inspiraciones de viaje."
+  },
+  "whyUs": {
+    "localExpert": "Experto Local",
+    "localExpertDesc": "Un guía nacido y criado en Senegal, con conocimiento íntimo de cada rincón.",
+    "authentic": "Experiencias Auténticas",
+    "authenticDesc": "Sin circuitos turísticos clásicos. Vive Senegal como un local.",
+    "smallGroups": "Grupos Pequeños",
+    "smallGroupsDesc": "Grupos íntimos para una experiencia personalizada e inolvidable.",
+    "custom": "A Medida",
+    "customDesc": "Cada circuito puede adaptarse a tus deseos y ritmo."
+  },
+  "tour": {
+    "duration": "Duración",
+    "price": "Precio",
+    "groupSize": "Tamaño del grupo",
+    "language": "Idioma",
+    "difficulty": "Dificultad",
+    "included": "Incluido",
+    "excluded": "No incluido",
+    "itinerary": "El viaje",
+    "overview": "Resumen",
+    "gallery": "Galería",
+    "reviews": "Opiniones",
+    "seeDetails": "Ver detalles",
+    "bookThisTour": "Reservar este circuito",
+    "relatedTours": "También te gustaría",
+    "persons": "personas",
+    "perPerson": "por persona",
+    "allTours": "Todos",
+    "filterBy": "Filtrar por",
+    "easy": "Fácil",
+    "moderate": "Moderado",
+    "challenging": "Desafiante"
+  },
+  "contact": {
+    "title": "Contáctenos",
+    "subtitle": "¿Tienes una pregunta? ¿Quieres planificar tu aventura? ¡Escríbenos!",
+    "name": "Nombre completo",
+    "email": "Email",
+    "phone": "Teléfono",
+    "message": "Tu mensaje",
+    "preferredTour": "Circuito preferido",
+    "send": "Enviar mensaje",
+    "success": "¡Mensaje enviado con éxito! Te responderemos pronto.",
+    "whatsapp": "O escríbenos en WhatsApp"
+  },
+  "about": {
+    "title": "Mi Historia",
+    "mission": "Mi Misión",
+    "cta": "Planifica tu viaje conmigo"
+  },
+  "footer": {
+    "tagline": "La Experiencia del Griot Moderno. Creando un puente entre las tradiciones ancestrales y la exploración digital moderna del espíritu Teranga.",
+    "quickLinks": "Enlaces rápidos",
+    "support": "Soporte",
+    "privacy": "Política de privacidad",
+    "terms": "Condiciones de uso",
+    "faq": "FAQ",
+    "sustainability": "Sostenibilidad",
+    "rights": "Todos los derechos reservados"
+  },
+  "admin": {
+    "dashboard": "Panel de control",
+    "tours": "Circuitos",
+    "destinations": "Destinos",
+    "services": "Servicios",
+    "mediaLibrary": "Mediateca",
+    "bookings": "Reservas",
+    "settings": "Configuración",
+    "welcome": "Jamm ak Salaam",
+    "welcomeSub": "Esto es lo que pasa con Explore Senegal hoy.",
+    "totalTours": "Circuitos totales",
+    "totalDestinations": "Destinos totales",
+    "totalBookings": "Reservas totales",
+    "totalMedia": "Archivos multimedia",
+    "recentActivity": "Actividad reciente",
+    "addTour": "Nuevo Circuito",
+    "addDestination": "Agregar destino",
+    "uploadMedia": "Subir multimedia",
+    "published": "Publicado",
+    "draft": "Borrador",
+    "login": "Iniciar sesión",
+    "loginTitle": "Gestionar Senegal",
+    "emailLabel": "Email",
+    "passwordLabel": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "noResults": "Sin resultados",
+    "back": "Volver",
+    "viewAll": "Ver todo",
+    "moreDetails": "Más detalles"
+  }
+}

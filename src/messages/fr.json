@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "title": "Explore Sénégal — Découvrez l'Âme du Sénégal",
+    "description": "Circuits authentiques au Sénégal : Lac Rose, Île de Gorée, Mbodienne, Baobab de Nianing et plus encore."
+  },
+  "nav": {
+    "home": "Accueil",
+    "tours": "Nos Circuits",
+    "destinations": "Destinations",
+    "about": "À Propos",
+    "contact": "Contact",
+    "bookNow": "Réserver un circuit",
+    "admin": "Espace Admin"
+  },
+  "hero": {
+    "title": "Découvrez l'Âme du Sénégal",
+    "subtitle": "Vivez des expériences authentiques avec un guide local passionné. Des dunes du Lac Rose aux rues historiques de Gorée.",
+    "cta": "Voir nos circuits",
+    "ctaSecondary": "Nous contacter"
+  },
+  "sections": {
+    "featuredTours": "Nos circuits phares",
+    "whyUs": "Voyagez avec l'Âme de l'Afrique",
+    "destinations": "Nos destinations",
+    "testimonials": "Ce que disent nos voyageurs",
+    "newsletter": "Restez Connectés",
+    "newsletterSub": "Recevez nos dernières offres et inspirations de voyage."
+  },
+  "whyUs": {
+    "localExpert": "Expert Local",
+    "localExpertDesc": "Un guide né et élevé au Sénégal, avec une connaissance intime de chaque recoin.",
+    "authentic": "Expériences Authentiques",
+    "authenticDesc": "Pas de circuits touristiques classiques. Vivez le Sénégal comme un local.",
+    "smallGroups": "Petits Groupes",
+    "smallGroupsDesc": "Des groupes intimes pour une expérience personnalisée et inoubliable.",
+    "custom": "Sur Mesure",
+    "customDesc": "Chaque circuit peut être adapté à vos envies et votre rythme."
+  },
+  "tour": {
+    "duration": "Durée",
+    "price": "Prix",
+    "groupSize": "Taille du groupe",
+    "language": "Langue",
+    "difficulty": "Difficulté",
+    "included": "Inclus",
+    "excluded": "Non inclus",
+    "itinerary": "Le voyage",
+    "overview": "Aperçu",
+    "gallery": "Galerie",
+    "reviews": "Avis",
+    "seeDetails": "Voir les détails",
+    "bookThisTour": "Réserver ce circuit",
+    "relatedTours": "Vous aimeriez aussi",
+    "persons": "personnes",
+    "perPerson": "par personne",
+    "allTours": "Tous",
+    "filterBy": "Filtrer par",
+    "easy": "Facile",
+    "moderate": "Modéré",
+    "challenging": "Difficile"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Une question ? Envie de planifier votre aventure ? Écrivez-nous !",
+    "name": "Nom complet",
+    "email": "Email",
+    "phone": "Téléphone",
+    "message": "Votre message",
+    "preferredTour": "Circuit souhaité",
+    "send": "Envoyer le message",
+    "success": "Message envoyé avec succès ! Nous vous répondrons rapidement.",
+    "whatsapp": "Ou écrivez-nous sur WhatsApp"
+  },
+  "about": {
+    "title": "Mon Histoire",
+    "mission": "Ma Mission",
+    "cta": "Planifiez votre voyage avec moi"
+  },
+  "footer": {
+    "tagline": "L'Expérience du Griot Moderne. Créer un pont entre les traditions ancestrales et l'exploration numérique moderne de l'esprit de la Teranga.",
+    "quickLinks": "Liens rapides",
+    "support": "Support",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "faq": "FAQ",
+    "sustainability": "Durabilité",
+    "rights": "Tous droits réservés"
+  },
+  "admin": {
+    "dashboard": "Tableau de bord",
+    "tours": "Circuits",
+    "destinations": "Destinations",
+    "services": "Services",
+    "mediaLibrary": "Médiathèque",
+    "bookings": "Réservations",
+    "settings": "Paramètres",
+    "welcome": "Jamm ak Salaam",
+    "welcomeSub": "Voici ce qui se passe avec Explore Sénégal aujourd'hui.",
+    "totalTours": "Circuits totaux",
+    "totalDestinations": "Destinations totales",
+    "totalBookings": "Réservations totales",
+    "totalMedia": "Fichiers média",
+    "recentActivity": "Activité récente",
+    "addTour": "Nouveau Circuit",
+    "addDestination": "Ajouter une destination",
+    "uploadMedia": "Télécharger média",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "login": "Connexion",
+    "loginTitle": "Gérer le Sénégal",
+    "emailLabel": "Email",
+    "passwordLabel": "Mot de passe",
+    "signIn": "Se connecter",
+    "signOut": "Déconnexion"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat",
+    "back": "Retour",
+    "viewAll": "Voir tout",
+    "moreDetails": "Plus de détails"
+  }
+}

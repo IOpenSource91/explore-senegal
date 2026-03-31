@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "title": "Explore Senegal — Discover the Soul of Senegal",
+    "description": "Authentic tours in Senegal: Lac Rose, Gorée Island, Mbodienne, Nianing Baobab and more."
+  },
+  "nav": {
+    "home": "Home",
+    "tours": "Our Tours",
+    "destinations": "Destinations",
+    "about": "About",
+    "contact": "Contact",
+    "bookNow": "Book a tour",
+    "admin": "Admin Area"
+  },
+  "hero": {
+    "title": "Discover the Soul of Senegal",
+    "subtitle": "Live authentic experiences with a passionate local guide. From the dunes of Lac Rose to the historic streets of Gorée.",
+    "cta": "View our tours",
+    "ctaSecondary": "Contact us"
+  },
+  "sections": {
+    "featuredTours": "Our featured tours",
+    "whyUs": "Travel with the Soul of Africa",
+    "destinations": "Our destinations",
+    "testimonials": "What our travelers say",
+    "newsletter": "Stay Connected",
+    "newsletterSub": "Receive our latest offers and travel inspirations."
+  },
+  "whyUs": {
+    "localExpert": "Local Expert",
+    "localExpertDesc": "A guide born and raised in Senegal, with intimate knowledge of every corner.",
+    "authentic": "Authentic Experiences",
+    "authenticDesc": "No classic tourist circuits. Experience Senegal like a local.",
+    "smallGroups": "Small Groups",
+    "smallGroupsDesc": "Intimate groups for a personalized and unforgettable experience.",
+    "custom": "Tailor-Made",
+    "customDesc": "Each tour can be adapted to your wishes and pace."
+  },
+  "tour": {
+    "duration": "Duration",
+    "price": "Price",
+    "groupSize": "Group size",
+    "language": "Language",
+    "difficulty": "Difficulty",
+    "included": "Included",
+    "excluded": "Not included",
+    "itinerary": "The journey",
+    "overview": "Overview",
+    "gallery": "Gallery",
+    "reviews": "Reviews",
+    "seeDetails": "See details",
+    "bookThisTour": "Book this tour",
+    "relatedTours": "You might also like",
+    "persons": "persons",
+    "perPerson": "per person",
+    "allTours": "All",
+    "filterBy": "Filter by",
+    "easy": "Easy",
+    "moderate": "Moderate",
+    "challenging": "Challenging"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Have a question? Want to plan your adventure? Write to us!",
+    "name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Your message",
+    "preferredTour": "Preferred tour",
+    "send": "Send message",
+    "success": "Message sent successfully! We'll get back to you soon.",
+    "whatsapp": "Or write to us on WhatsApp"
+  },
+  "about": {
+    "title": "My Story",
+    "mission": "My Mission",
+    "cta": "Plan your trip with me"
+  },
+  "footer": {
+    "tagline": "The Modern Griot Experience. Creating a bridge between ancestral traditions and modern digital exploration of the Teranga spirit.",
+    "quickLinks": "Quick links",
+    "support": "Support",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "faq": "FAQ",
+    "sustainability": "Sustainability",
+    "rights": "All rights reserved"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "tours": "Tours",
+    "destinations": "Destinations",
+    "services": "Services",
+    "mediaLibrary": "Media Library",
+    "bookings": "Bookings",
+    "settings": "Settings",
+    "welcome": "Jamm ak Salaam",
+    "welcomeSub": "Here's what's happening with Explore Senegal today.",
+    "totalTours": "Total tours",
+    "totalDestinations": "Total destinations",
+    "totalBookings": "Total bookings",
+    "totalMedia": "Media files",
+    "recentActivity": "Recent activity",
+    "addTour": "New Tour",
+    "addDestination": "Add destination",
+    "uploadMedia": "Upload media",
+    "published": "Published",
+    "draft": "Draft",
+    "login": "Login",
+    "loginTitle": "Manage Senegal",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "noResults": "No results",
+    "back": "Back",
+    "viewAll": "View all",
+    "moreDetails": "More details"
+  }
+}
