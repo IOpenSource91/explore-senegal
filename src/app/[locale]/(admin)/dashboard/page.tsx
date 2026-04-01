@@ -1,5 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { createAdminServerClient as createServerSupabaseClient } from '@/lib/supabase/admin-server';
+import { getAboutPageContent, getLocalizedContent } from '@/lib/site-content';
 import { Map, MapPin, CalendarCheck, Image } from 'lucide-react';
 
 export default async function AdminDashboard({
@@ -18,12 +19,20 @@ export default async function AdminDashboard({
     { count: destinationsCount },
     { count: contactsCount },
     { count: mediaCount },
+    settingsResult,
   ] = await Promise.all([
     supabase.from('tours').select('*', { count: 'exact', head: true }),
     supabase.from('destinations').select('*', { count: 'exact', head: true }),
     supabase.from('contacts').select('*', { count: 'exact', head: true }),
     supabase.from('media').select('*', { count: 'exact', head: true }),
+    supabase.from('site_settings').select('*').eq('id', 'default').maybeSingle(),
   ]);
+
+  const settings = settingsResult.data ?? null;
+  const siteName = settings?.site_name || 'Explore Senegal';
+  const aboutPageContent = getAboutPageContent(settings);
+  const guideName = getLocalizedContent(locale, aboutPageContent.guideName).trim();
+  const guideRole = getLocalizedContent(locale, aboutPageContent.guideRole).trim();
 
   const stats = [
     {
@@ -58,11 +67,16 @@ export default async function AdminDashboard({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-headline-lg font-bold text-on-surface">
-            Jamm ak Salaam, Moussa.
+            {guideName ? `Jamm ak Salaam, ${guideName}.` : 'Jamm ak Salaam.'}
           </h1>
           <p className="mt-1 text-body-lg text-on-surface-variant">
-            Voici ce qui se passe avec Explore Sénégal aujourd'hui.
+            Voici ce qui se passe avec {siteName} aujourd'hui.
           </p>
+          {guideRole ? (
+            <p className="mt-3 inline-flex rounded-full bg-primary/8 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              {guideRole}
+            </p>
+          ) : null}
         </div>
       </div>
 

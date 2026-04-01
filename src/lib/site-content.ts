@@ -48,6 +48,9 @@ export interface DestinationsPageContent {
 }
 
 export interface AboutPageContent {
+  guideName: LocalizedContent;
+  guideRole: LocalizedContent;
+  guideIntro: LocalizedContent;
   kicker: LocalizedContent;
   title: LocalizedContent;
   subtitle: LocalizedContent;
@@ -225,6 +228,9 @@ export const destinationsPageContentDefaults: DestinationsPageContent = {
 };
 
 export const aboutPageContentDefaults: AboutPageContent = {
+  guideName: text('', '', ''),
+  guideRole: text('', '', ''),
+  guideIntro: text('', '', ''),
   kicker: text('Le guide', 'The guide', 'El guia'),
   title: text(
     'Une presence locale qui explique, relie et donne du sens au parcours.',

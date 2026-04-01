@@ -108,6 +108,9 @@ const destinationsFields: FieldConfig[] = [
 ];
 
 const aboutFields: FieldConfig[] = [
+  { key: 'guideName', label: 'Nom', group: 'Profil du guide', rows: 2 },
+  { key: 'guideRole', label: 'Role', group: 'Profil du guide', rows: 2 },
+  { key: 'guideIntro', label: 'Presentation courte', group: 'Profil du guide', rows: 4 },
   { key: 'kicker', label: 'Accroche', group: 'Hero', rows: 2 },
   { key: 'title', label: 'Titre', group: 'Hero', rows: 4 },
   { key: 'subtitle', label: 'Texte', group: 'Hero', rows: 4 },
@@ -475,7 +478,7 @@ export default function SettingsPage() {
             Parametres
           </h1>
           <p className="mt-1 text-body-lg text-on-surface-variant">
-            Configuration generale, theme et contenu editorial des pages publiques.
+            Configuration generale, theme, profil du guide et contenu editorial des pages publiques.
           </p>
         </div>
       </div>
@@ -622,8 +625,8 @@ export default function SettingsPage() {
               </h2>
               <p className="mt-1 text-sm text-on-surface-variant">
                 Les circuits, destinations, services et photos restent geres dans leurs
-                modules respectifs. Ici, vous pilotez les textes structurants des pages
-                publiques.
+                modules respectifs. Ici, vous pilotez aussi votre profil et les textes
+                structurants des pages publiques.
               </p>
             </div>
           </div>
@@ -665,7 +668,7 @@ export default function SettingsPage() {
 
         <ContentEditorSection
           title="Page a propos"
-          description="Presentation du guide, citation, histoire et appel a l action final."
+          description="Profil du guide, hero, citation, histoire et appel a l action final."
           icon={<FileText size={18} />}
           content={asLocalizedRecord(form.aboutPageContent)}
           fields={aboutFields}

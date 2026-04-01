@@ -17,6 +17,7 @@ export default async function AboutPage({
 
   const copy = {
     fr: {
+      profileKicker: 'Votre profil',
       kicker: 'Le guide',
       title: 'Une presence locale qui explique, relie et donne du sens au parcours.',
       subtitle:
@@ -77,6 +78,7 @@ export default async function AboutPage({
       ctaSecondary: 'Ecrire maintenant',
     },
     en: {
+      profileKicker: 'Your profile',
       kicker: 'The guide',
       title: 'A local presence that explains, connects, and gives meaning to the route.',
       subtitle:
@@ -137,6 +139,7 @@ export default async function AboutPage({
       ctaSecondary: 'Write now',
     },
     es: {
+      profileKicker: 'Tu perfil',
       kicker: 'El guia',
       title: 'Una presencia local que explica, conecta y da sentido a la ruta.',
       subtitle:
@@ -215,6 +218,10 @@ export default async function AboutPage({
   ]);
 
   const pageContent = getAboutPageContent(settingsResult.data);
+  const siteName = settingsResult.data?.site_name || 'Explore Senegal';
+  const guideName = getLocalizedContent(locale, pageContent.guideName).trim();
+  const guideRole = getLocalizedContent(locale, pageContent.guideRole).trim();
+  const guideIntro = getLocalizedContent(locale, pageContent.guideIntro).trim();
   const stats = [
     String(tourCountResult.count ?? 3).padStart(2, '0'),
     String(destinationCountResult.count ?? 5).padStart(2, '0'),
@@ -256,6 +263,28 @@ export default async function AboutPage({
             <p className="mt-5 max-w-3xl text-base leading-8 text-on-surface-variant">
               {getLocalizedContent(locale, pageContent.subtitle)}
             </p>
+            {guideName || guideRole || guideIntro ? (
+              <div className="surface-panel mt-8 rounded-[1.5rem] px-5 py-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  {copy.profileKicker}
+                </p>
+                {guideName ? (
+                  <h2 className="mt-4 font-heading text-2xl font-bold text-on-surface">
+                    {guideName}
+                  </h2>
+                ) : null}
+                {guideRole ? (
+                  <p className="mt-2 text-sm font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+                    {guideRole}
+                  </p>
+                ) : null}
+                {guideIntro ? (
+                  <p className="mt-4 text-[15px] leading-7 text-on-surface-variant">
+                    {guideIntro}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
@@ -334,7 +363,7 @@ export default async function AboutPage({
             <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-end">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/62">
-                  Explore Senegal
+                  {siteName}
                 </p>
                 <h2 className="mt-5 max-w-3xl font-heading text-[clamp(2rem,3.8vw,3.5rem)] font-bold leading-[1.02]">
                   {getLocalizedContent(locale, pageContent.ctaTitle)}
