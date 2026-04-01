@@ -171,3 +171,7 @@ export function getContactDetails(settings: SiteSettings | null) {
     whatsapp: settings?.whatsapp?.trim() || '+221 77 000 00 00',
   };
 }
+
+export function shouldShowPublicPrices() {
+  return false;
+}

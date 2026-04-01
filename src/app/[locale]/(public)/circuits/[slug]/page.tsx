@@ -21,6 +21,7 @@ import {
   getItineraryDescription,
   getItineraryTitle,
   getRouteDestinationNames,
+  shouldShowPublicPrices,
   getTourLongDescription,
   getTourName,
 } from '@/lib/public';
@@ -173,6 +174,7 @@ export default async function TourDetailPage({
   const relatedTours = (relatedToursData ?? []) as any[];
 
   const contact = getContactDetails(settingsResult.data);
+  const showPublicPrices = shouldShowPublicPrices();
   const whatsappHref = formatWhatsAppHref(contact.whatsapp);
   const name = getTourName(tour, locale);
   const description = getTourLongDescription(tour, locale);
@@ -182,7 +184,10 @@ export default async function TourDetailPage({
     (left: any, right: any) => left.step_order - right.step_order
   );
   const images = (tour.media ?? []).filter((item: any) => item.type === 'image');
-  const price = tour.price ? formatPrice(tour.price, tour.currency) : null;
+  const price =
+    showPublicPrices && tour.price != null
+      ? formatPrice(tour.price, tour.currency)
+      : null;
 
   return (
     <div className="pb-12 pt-24 md:pb-20">
@@ -453,6 +458,7 @@ export default async function TourDetailPage({
                 tour={relatedTour}
                 locale={locale}
                 labels={copy.tourCard}
+                showPrice={showPublicPrices}
               />
             ))}
           </div>

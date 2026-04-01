@@ -3,11 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createAdminClient as createClient } from '@/lib/supabase/admin-client';
 import { useRouter } from '@/i18n/routing';
-import { cn, slugify } from '@/lib/utils';
+import { slugify } from '@/lib/utils';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, MapPin, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
 
+import { AdminImagePicker } from '@/components/admin/AdminImagePicker';
 import { AdminPageLoader } from '@/components/admin/AdminPageLoader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -346,15 +347,13 @@ export default function DestinationsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                    Image de couverture (URL)
-                  </Label>
-                  <Input
-                    type="url"
+                  <AdminImagePicker
+                    open={dialogOpen}
                     value={form.cover_image}
-                    onChange={(e) => updateField('cover_image', e.target.value)}
-                    placeholder="https://..."
-                    className="rounded-xl"
+                    onChange={(value) => updateField('cover_image', value)}
+                    uploadBaseName={form.name}
+                    label="Image de couverture"
+                    description="Choisissez une image existante dans la mediatheque ou televersez-en une nouvelle directement depuis ce formulaire."
                   />
                 </div>
               </div>

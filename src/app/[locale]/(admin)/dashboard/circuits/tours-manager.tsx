@@ -19,6 +19,7 @@ import {
   MapPin,
 } from 'lucide-react';
 
+import { AdminImagePicker } from '@/components/admin/AdminImagePicker';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -467,6 +468,9 @@ function TourFormDialog({
                         placeholder="450"
                         className="mt-1.5"
                       />
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Laissez vide pour masquer le prix sur le site public.
+                      </p>
                     </FieldGroup>
 
                     <FieldGroup>
@@ -563,27 +567,14 @@ function TourFormDialog({
                   </FieldGroup>
 
                   <FieldGroup>
-                    <Label htmlFor="cover_image">Image de couverture (URL)</Label>
-                    <Input
-                      id="cover_image"
-                      type="url"
+                    <AdminImagePicker
+                      open={open}
                       value={form.cover_image}
-                      onChange={(e) => update('cover_image', e.target.value)}
-                      placeholder="https://..."
-                      className="mt-1.5"
+                      onChange={(value) => update('cover_image', value)}
+                      uploadBaseName={form.name}
+                      label="Image de couverture"
+                      description="Selectionnez une image de la mediatheque ou televersez-en une nouvelle. Aucun collage d URL n est necessaire ici."
                     />
-                    {form.cover_image && (
-                      <div className="mt-2 overflow-hidden rounded-lg">
-                        <img
-                          src={form.cover_image}
-                          alt="Apercu"
-                          className="h-32 w-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
                   </FieldGroup>
 
                   <div className="flex items-center justify-between rounded-xl bg-muted/40 px-4 py-3">

@@ -163,6 +163,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     uploadedCount: uploaded.length,
+    uploaded,
     failed,
   });
 }

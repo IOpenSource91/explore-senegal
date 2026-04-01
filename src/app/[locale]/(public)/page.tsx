@@ -20,6 +20,7 @@ import {
   getDifficultyLabel,
   getLocalizedValue,
   getRouteDestinationNames,
+  shouldShowPublicPrices,
   getTourName,
   getTourShortDescription,
 } from '@/lib/public';
@@ -252,6 +253,7 @@ export default async function HomePage({
   const destinations = (destinationResult.data ?? []) as any[];
   const services = (serviceResult.data ?? []) as any[];
   const pageContent = getHomepageContent(settingsResult.data);
+  const showPublicPrices = shouldShowPublicPrices();
   const heroTour = featuredTours[0] ?? null;
   const previewTour = featuredTours[1] ?? null;
   const heroStops = getRouteDestinationNames(heroTour?.tour_destinations).slice(0, 3);
@@ -296,7 +298,7 @@ export default async function HomePage({
                   ))}
                 </div>
 
-                {heroTour?.price && (
+                {showPublicPrices && heroTour?.price != null && (
                   <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm">
                     {formatPrice(heroTour.price, heroTour.currency)}
                   </span>
@@ -451,6 +453,7 @@ export default async function HomePage({
                 tour={tour}
                 locale={locale}
                 labels={copy.tourCard}
+                showPrice={showPublicPrices}
               />
             ))}
           </div>

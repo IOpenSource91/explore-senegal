@@ -47,6 +47,7 @@ interface TourCardProps {
   locale: string;
   labels: TourCardLabels;
   className?: string;
+  showPrice?: boolean;
 }
 
 export function TourCard({
@@ -54,12 +55,14 @@ export function TourCard({
   locale,
   labels,
   className,
+  showPrice = false,
 }: TourCardProps) {
   const name = getTourName(tour, locale);
   const description = getTourShortDescription(tour, locale);
   const routeStops = getRouteDestinationNames(tour.tour_destinations).slice(0, 3);
   const difficulty = getDifficultyLabel(locale, tour.difficulty);
-  const price = tour.price ? formatPrice(tour.price, tour.currency) : null;
+  const price =
+    showPrice && tour.price != null ? formatPrice(tour.price, tour.currency) : null;
 
   return (
     <Link

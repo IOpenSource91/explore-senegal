@@ -10,7 +10,12 @@ import { setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { TourCard } from '@/components/public/TourCard';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getRouteDestinationNames, getTourName, getTourShortDescription } from '@/lib/public';
+import {
+  getRouteDestinationNames,
+  getTourName,
+  getTourShortDescription,
+  shouldShowPublicPrices,
+} from '@/lib/public';
 import {
   getCircuitsPageContent,
   getLocalizedContent,
@@ -108,6 +113,7 @@ export default async function CircuitsPage({
 
   const tours = (toursResult.data ?? []) as any[];
   const pageContent = getCircuitsPageContent(settingsResult.data);
+  const showPublicPrices = shouldShowPublicPrices();
   const featuredTour = tours[0] ?? null;
   const featuredStops = getRouteDestinationNames(featuredTour?.tour_destinations).slice(0, 3);
   const stats = [
@@ -189,7 +195,7 @@ export default async function CircuitsPage({
                 <span className="rounded-full border border-white/14 bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/84 backdrop-blur-sm">
                   {getLocalizedContent(locale, pageContent.spotlight)}
                 </span>
-                {featuredTour?.price && (
+                {showPublicPrices && featuredTour?.price != null && (
                   <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-primary">
                     {formatPrice(featuredTour.price, featuredTour.currency)}
                   </span>
@@ -249,6 +255,7 @@ export default async function CircuitsPage({
                   tour={tour}
                   locale={locale}
                   labels={copy.tourCard}
+                  showPrice={showPublicPrices}
                 />
               ))}
             </div>
