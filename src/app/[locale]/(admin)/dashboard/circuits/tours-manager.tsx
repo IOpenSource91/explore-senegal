@@ -273,7 +273,7 @@ function TourFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-2xl max-h-[90vh] flex flex-col"
+        className="max-h-[92vh] sm:max-w-5xl xl:max-w-6xl flex flex-col"
         showCloseButton
       >
         <DialogHeader>
@@ -307,7 +307,7 @@ function TourFormDialog({
         </div>
 
         {/* Form sections */}
-        <ScrollArea className="flex-1 -mx-4 px-4 max-h-[54vh]">
+        <ScrollArea className="flex-1 -mx-4 px-4 max-h-[70vh]">
           <div className="space-y-5 py-2">
             <AnimatePresence mode="wait">
               {section === 'general' && (

@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback, type FormEvent, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import {
   Check,
-  ChevronDown,
-  FileText,
+  House,
   Languages,
+  MapPinned,
   Palette,
+  Route,
   Save,
   Settings,
+  UserRound,
+  type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from '@/i18n/routing';
@@ -32,6 +35,7 @@ import {
 } from '@/lib/site-content';
 import { getThemeById, themePresets, themeToCSSVars } from '@/lib/themes';
 import type { ThemePreset } from '@/lib/themes';
+import { cn } from '@/lib/utils';
 
 type SettingsForm = {
   siteName: string;
@@ -54,6 +58,14 @@ type FieldConfig = {
   label: string;
   group: string;
   rows?: number;
+};
+
+type ContentSectionConfig = {
+  key: ContentSectionKey;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  fields: FieldConfig[];
 };
 
 const locales: Array<{
@@ -126,6 +138,37 @@ const aboutFields: FieldConfig[] = [
   { key: 'ctaSecondary', label: 'CTA secondaire', group: 'Bloc final', rows: 2 },
 ];
 
+const contentSections: ContentSectionConfig[] = [
+  {
+    key: 'homepageContent',
+    title: 'Accueil',
+    description: 'Hero, circuits phares, services et bloc final.',
+    icon: House,
+    fields: homepageFields,
+  },
+  {
+    key: 'circuitsPageContent',
+    title: 'Circuits',
+    description: 'Hero, aide au choix et circuit en vedette.',
+    icon: Route,
+    fields: circuitsFields,
+  },
+  {
+    key: 'destinationsPageContent',
+    title: 'Destinations',
+    description: 'Hero, actions et bloc de previsualisation.',
+    icon: MapPinned,
+    fields: destinationsFields,
+  },
+  {
+    key: 'aboutPageContent',
+    title: 'A propos',
+    description: 'Profil du guide, histoire, valeurs et CTA final.',
+    icon: UserRound,
+    fields: aboutFields,
+  },
+];
+
 function createDefaultForm(): SettingsForm {
   return {
     siteName: 'Explore Senegal',
@@ -157,26 +200,8 @@ function getLocalizedPreview(value: string) {
   return trimmed.length > 72 ? `${trimmed.slice(0, 72)}...` : trimmed;
 }
 
-function ContentEditorSection({
-  title,
-  description,
-  icon,
-  content,
-  fields,
-  onChange,
-  defaultOpen = false,
-}: {
-  title: string;
-  description: string;
-  icon: ReactNode;
-  content: Record<string, LocalizedContent>;
-  fields: FieldConfig[];
-  onChange: (field: string, locale: keyof LocalizedContent, value: string) => void;
-  defaultOpen?: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [activeLocale, setActiveLocale] = useState<keyof LocalizedContent>('fr');
-  const groupedFields = fields.reduce<Array<{ group: string; fields: FieldConfig[] }>>(
+function groupFieldConfigs(fields: FieldConfig[]) {
+  return fields.reduce<Array<{ group: string; fields: FieldConfig[] }>>(
     (groups, field) => {
       const currentGroup = groups[groups.length - 1];
 
@@ -190,155 +215,264 @@ function ContentEditorSection({
     },
     []
   );
+}
+
+function countFilledFields(
+  content: Record<string, LocalizedContent>,
+  fields: FieldConfig[]
+) {
+  return fields.filter((field) =>
+    locales.some((localeItem) => Boolean(content[field.key]?.[localeItem.key]?.trim()))
+  ).length;
+}
+
+function ContentWorkspace({
+  form,
+  onChange,
+}: {
+  form: Pick<SettingsForm, ContentSectionKey>;
+  onChange: (section: ContentSectionKey, field: string, locale: keyof LocalizedContent, value: string) => void;
+}) {
+  const [activeSectionKey, setActiveSectionKey] = useState<ContentSectionKey>('homepageContent');
+  const [activeLocale, setActiveLocale] = useState<keyof LocalizedContent>('fr');
+  const activeSection =
+    contentSections.find((section) => section.key === activeSectionKey) ??
+    contentSections[0];
+  const groupedFields = groupFieldConfigs(activeSection.fields);
+  const defaultGroup = groupedFields[0]?.group ?? '';
+  const [activeGroup, setActiveGroup] = useState(defaultGroup);
+
+  useEffect(() => {
+    setActiveGroup(defaultGroup);
+  }, [activeSectionKey, defaultGroup]);
+
+  const activeContent = asLocalizedRecord(form[activeSection.key]);
+  const currentGroup =
+    groupedFields.find((group) => group.group === activeGroup) ?? groupedFields[0];
+  const filledCount = countFilledFields(activeContent, activeSection.fields);
 
   return (
-    <div className="rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
-      <button
-        type="button"
-        onClick={() => setIsOpen((current) => !current)}
-        className="flex w-full items-start justify-between gap-4 text-left"
-      >
-        <div className="flex items-start gap-3">
-          <div className="inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
-            {icon}
+    <div className="rounded-[1.75rem] bg-surface-container-lowest p-6 shadow-ambient md:p-7">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h2 className="font-heading text-xl font-bold text-on-surface">
+            Contenu editorial public
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-on-surface-variant">
+            Choisissez d abord la page a modifier, puis le bloc, puis la langue.
+            L edition devient plus directe et beaucoup moins chargee.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+            {contentSections.length} pages
+          </span>
+          <span className="rounded-full bg-primary/8 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+            {locales.length} langues
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {contentSections.map((section) => {
+          const Icon = section.icon;
+          const content = asLocalizedRecord(form[section.key]);
+          const sectionFilledCount = countFilledFields(content, section.fields);
+          const isActive = section.key === activeSectionKey;
+
+          return (
+            <button
+              key={section.key}
+              type="button"
+              onClick={() => setActiveSectionKey(section.key)}
+              className={cn(
+                'rounded-[1.35rem] border p-4 text-left transition-all',
+                isActive
+                  ? 'border-primary bg-primary/6 shadow-[0_16px_34px_-28px_rgba(156,61,0,0.65)]'
+                  : 'border-outline-variant/30 bg-surface-container-low hover:border-outline-variant'
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span
+                  className={cn(
+                    'inline-flex rounded-2xl p-3',
+                    isActive ? 'bg-primary text-white' : 'bg-surface-container-lowest text-primary'
+                  )}
+                >
+                  <Icon size={18} />
+                </span>
+                <span className="rounded-full bg-surface-container-lowest px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+                  {sectionFilledCount}/{section.fields.length}
+                </span>
+              </div>
+              <p className="mt-4 font-heading text-lg font-bold text-on-surface">
+                {section.title}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                {section.description}
+              </p>
+            </button>
+          );
+        })}
+      </div>
+
+      <Separator className="my-6 bg-surface-container-low" />
+
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            Page active
+          </p>
+          <h3 className="mt-2 font-heading text-2xl font-bold text-on-surface">
+            {activeSection.title}
+          </h3>
+          <p className="mt-2 text-sm text-on-surface-variant">
+            {filledCount} champ{filledCount > 1 ? 's' : ''} rempli{filledCount > 1 ? 's' : ''} sur {activeSection.fields.length}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-surface-container-low px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+            <Languages size={14} />
+            <span>Langue</span>
           </div>
-          <div>
-            <h2 className="font-heading text-lg font-bold text-on-surface">{title}</h2>
-            <p className="mt-1 text-sm text-on-surface-variant">{description}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-surface-container-low px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
-                {fields.length} champs
-              </span>
-              <span className="rounded-full bg-primary/8 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                {activeLocale.toUpperCase()} actif
-              </span>
-            </div>
+          <div className="inline-flex rounded-full bg-surface-container-low p-1">
+            {locales.map((localeItem) => {
+              const isActive = activeLocale === localeItem.key;
+
+              return (
+                <button
+                  key={localeItem.key}
+                  type="button"
+                  onClick={() => setActiveLocale(localeItem.key)}
+                  className={cn(
+                    'rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors',
+                    isActive
+                      ? 'bg-primary text-white'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  )}
+                >
+                  {localeItem.label}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant">
-          <ChevronDown
-            size={18}
-            className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          />
-        </span>
-      </button>
+      </div>
 
-      {isOpen ? (
-        <>
-          <Separator className="my-4 bg-surface-container-low" />
+      <div className="mt-6 grid gap-6 xl:grid-cols-[15rem_minmax(0,1fr)]">
+        <div className="rounded-[1.35rem] bg-surface-container-low p-3">
+          <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
+            Blocs
+          </p>
+          <div className="space-y-2">
+            {groupedFields.map((group) => {
+              const groupFilledCount = countFilledFields(activeContent, group.fields);
+              const isActive = group.group === currentGroup?.group;
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-surface-container-low px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
-              <Languages size={14} />
-              <span>Langue d edition</span>
-            </div>
-
-            <div className="inline-flex rounded-full bg-surface-container-low p-1">
-              {locales.map((localeItem) => {
-                const isActive = activeLocale === localeItem.key;
-
-                return (
-                  <button
-                    key={localeItem.key}
-                    type="button"
-                    onClick={() => setActiveLocale(localeItem.key)}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors ${
-                      isActive
-                        ? 'bg-primary text-white'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                  >
-                    {localeItem.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-5 space-y-5">
-            {groupedFields.map((group) => (
-              <div
-                key={group.group}
-                className="rounded-[1.25rem] border border-outline-variant/30 bg-surface-container-low p-4 md:p-5"
-              >
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-on-surface">{group.group}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-on-surface-variant">
-                      {group.fields.length} champ{group.fields.length > 1 ? 's' : ''}
-                    </p>
+              return (
+                <button
+                  key={group.group}
+                  type="button"
+                  onClick={() => setActiveGroup(group.group)}
+                  className={cn(
+                    'w-full rounded-[1.1rem] px-3 py-3 text-left transition-colors',
+                    isActive
+                      ? 'bg-surface-container-lowest shadow-sm'
+                      : 'hover:bg-surface-container-lowest/70'
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-on-surface">{group.group}</p>
+                      <p className="mt-1 text-xs text-on-surface-variant">
+                        {group.fields.length} champ{group.fields.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-primary/8 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary">
+                      {groupFilledCount}/{group.fields.length}
+                    </span>
                   </div>
-                  <span className="rounded-full bg-surface-container-lowest px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
-                    {locales.find((localeItem) => localeItem.key === activeLocale)?.hint}
-                  </span>
-                </div>
-
-                <div className="grid gap-4 lg:grid-cols-2">
-                  {group.fields.map((field) => {
-                    const localized = content[field.key] ?? { fr: '', en: '', es: '' };
-                    const currentValue = localized[activeLocale] ?? '';
-
-                    return (
-                      <div
-                        key={field.key}
-                        className="rounded-xl border border-outline-variant/35 bg-surface-container-lowest p-4"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm font-semibold text-on-surface">{field.label}</p>
-                            <p className="mt-1 text-xs text-on-surface-variant">
-                              {getLocalizedPreview(currentValue)}
-                            </p>
-                          </div>
-                          <div className="flex gap-1.5">
-                            {locales.map((localeItem) => {
-                              const hasValue = Boolean(localized[localeItem.key]?.trim());
-                              return (
-                                <span
-                                  key={localeItem.key}
-                                  className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${
-                                    localeItem.key === activeLocale
-                                      ? 'bg-primary text-white'
-                                      : hasValue
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'bg-surface-container-low text-on-surface-variant'
-                                  }`}
-                                >
-                                  {localeItem.label}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        <div className="mt-4 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                              {activeLocale.toUpperCase()}
-                            </Label>
-                            <span className="text-[11px] uppercase tracking-[0.18em] text-on-surface-variant">
-                              {locales.find((localeItem) => localeItem.key === activeLocale)?.hint}
-                            </span>
-                          </div>
-
-                          <Textarea
-                            value={currentValue}
-                            onChange={(event) =>
-                              onChange(field.key, activeLocale, event.target.value)
-                            }
-                            rows={field.rows ?? 3}
-                            className="min-h-[5.25rem] rounded-xl bg-surface-container-low"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+                </button>
+              );
+            })}
           </div>
-        </>
-      ) : null}
+        </div>
+
+        <div className="rounded-[1.35rem] bg-surface-container-low p-4 md:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-on-surface">
+                {currentGroup?.group ?? 'Bloc'}
+              </p>
+              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-on-surface-variant">
+                Edition en {locales.find((localeItem) => localeItem.key === activeLocale)?.hint}
+              </p>
+            </div>
+            <span className="rounded-full bg-surface-container-lowest px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+              {currentGroup?.fields.length ?? 0} champ{(currentGroup?.fields.length ?? 0) > 1 ? 's' : ''}
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            {currentGroup?.fields.map((field) => {
+              const localized = activeContent[field.key] ?? { fr: '', en: '', es: '' };
+              const currentValue = localized[activeLocale] ?? '';
+
+              return (
+                <div
+                  key={field.key}
+                  className="rounded-[1.15rem] border border-outline-variant/35 bg-surface-container-lowest p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-on-surface">{field.label}</p>
+                      <p className="mt-1 text-xs text-on-surface-variant">
+                        {getLocalizedPreview(currentValue)}
+                      </p>
+                    </div>
+                    <div className="flex gap-1.5">
+                      {locales.map((localeItem) => {
+                        const hasValue = Boolean(localized[localeItem.key]?.trim());
+                        return (
+                          <span
+                            key={localeItem.key}
+                            className={cn(
+                              'rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em]',
+                              localeItem.key === activeLocale
+                                ? 'bg-primary text-white'
+                                : hasValue
+                                  ? 'bg-primary/10 text-primary'
+                                  : 'bg-surface-container-low text-on-surface-variant'
+                            )}
+                          >
+                            {localeItem.label}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                      {field.label} ({activeLocale.toUpperCase()})
+                    </Label>
+                    <Textarea
+                      value={currentValue}
+                      onChange={(event) =>
+                        onChange(activeSection.key, field.key, activeLocale, event.target.value)
+                      }
+                      rows={field.rows ?? 3}
+                      className="min-h-[6.5rem] rounded-xl bg-surface-container-low"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -483,201 +617,163 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="mt-8 rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
-        <div className="flex items-center gap-3">
-          <Palette size={20} className="text-primary" />
-          <h2 className="font-heading text-lg font-bold text-on-surface">
-            Theme du site
-          </h2>
-        </div>
-        <p className="mt-1 text-sm text-on-surface-variant">
-          Choisissez une palette de couleurs pour le site public.
-        </p>
-        <Separator className="my-4 bg-surface-container-low" />
-
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-          {themePresets.map((preset) => {
-            const isActive = activeTheme === preset.id;
-
-            return (
-              <motion.button
-                key={preset.id}
-                type="button"
-                onClick={() => handleThemeSelect(preset)}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className={`relative flex flex-col items-center gap-3 rounded-xl border-2 p-4 transition-colors ${
-                  isActive
-                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
-                    : 'border-outline-variant/40 bg-surface-container-low hover:border-outline-variant'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
-                  >
-                    <Check size={14} />
-                  </motion.div>
-                )}
-
-                <div className="flex gap-1.5">
-                  <div
-                    className="h-8 w-8 rounded-full border border-black/10"
-                    style={{ backgroundColor: preset.colors.primary }}
-                  />
-                  <div
-                    className="h-8 w-8 rounded-full border border-black/10"
-                    style={{ backgroundColor: preset.colors.secondary }}
-                  />
-                  <div
-                    className="h-8 w-8 rounded-full border border-black/10"
-                    style={{ backgroundColor: preset.colors.tertiary }}
-                  />
-                </div>
-
-                <div
-                  className="h-3 w-full rounded-full border border-black/5"
-                  style={{ backgroundColor: preset.colors.surface }}
-                />
-
-                <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                  {preset.name}
-                </span>
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-        <div className="rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
-          <h2 className="font-heading text-lg font-bold text-on-surface">
-            Informations du site
-          </h2>
-          <Separator className="my-4 bg-surface-container-low" />
+        <div className="grid gap-6 xl:grid-cols-[1.06fr_0.94fr]">
+          <div className="rounded-[1.75rem] bg-surface-container-lowest p-6 shadow-ambient md:p-7">
+            <div className="flex items-start gap-3">
+              <div className="inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
+                <Settings size={20} />
+              </div>
+              <div>
+                <h2 className="font-heading text-lg font-bold text-on-surface">
+                  Informations essentielles
+                </h2>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  Commencez par les informations simples et vraiment utiles.
+                </p>
+              </div>
+            </div>
 
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                Nom du site
-              </Label>
-              <Input
-                value={form.siteName}
-                onChange={(event) => updateField('siteName', event.target.value)}
-                placeholder="Nom du site"
-                className="rounded-xl"
-              />
+            <Separator className="my-5 bg-surface-container-low" />
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2 md:col-span-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                  Nom du site
+                </Label>
+                <Input
+                  value={form.siteName}
+                  onChange={(event) => updateField('siteName', event.target.value)}
+                  placeholder="Nom du site"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                  Numero WhatsApp
+                </Label>
+                <Input
+                  type="tel"
+                  value={form.whatsapp}
+                  onChange={(event) => updateField('whatsapp', event.target.value)}
+                  placeholder="+221 77 000 00 00"
+                  className="rounded-xl"
+                />
+                <p className="text-xs text-on-surface-variant">
+                  Utilise pour le bouton WhatsApp du site public.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                  Email de contact
+                </Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(event) => updateField('email', event.target.value)}
+                  placeholder="contact@example.com"
+                  className="rounded-xl"
+                />
+                <p className="text-xs text-on-surface-variant">
+                  Utilise pour les demandes de contact.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] bg-surface-container-lowest p-6 shadow-ambient md:p-7">
+            <div className="flex items-start gap-3">
+              <div className="inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
+                <Palette size={20} />
+              </div>
+              <div>
+                <h2 className="font-heading text-lg font-bold text-on-surface">
+                  Theme du site
+                </h2>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  Choisissez rapidement la palette du site public.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-5 bg-surface-container-low" />
+
+            <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
+              {themePresets.map((preset) => {
+                const isActive = activeTheme === preset.id;
+
+                return (
+                  <motion.button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => handleThemeSelect(preset)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={cn(
+                      'relative min-w-[10.5rem] shrink-0 rounded-[1.35rem] border p-4 text-left transition-colors',
+                      isActive
+                        ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                        : 'border-outline-variant/35 bg-surface-container-low hover:border-outline-variant'
+                    )}
+                  >
+                    {isActive ? (
+                      <span className="absolute right-3 top-3 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white">
+                        <Check size={14} />
+                      </span>
+                    ) : null}
+
+                    <div className="flex gap-1.5">
+                      <div
+                        className="h-8 w-8 rounded-full border border-black/10"
+                        style={{ backgroundColor: preset.colors.primary }}
+                      />
+                      <div
+                        className="h-8 w-8 rounded-full border border-black/10"
+                        style={{ backgroundColor: preset.colors.secondary }}
+                      />
+                      <div
+                        className="h-8 w-8 rounded-full border border-black/10"
+                        style={{ backgroundColor: preset.colors.tertiary }}
+                      />
+                    </div>
+
+                    <div
+                      className="mt-3 h-3 w-full rounded-full border border-black/5"
+                      style={{ backgroundColor: preset.colors.surface }}
+                    />
+
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                      {preset.name}
+                    </p>
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
-          <h2 className="font-heading text-lg font-bold text-on-surface">
-            Coordonnees
-          </h2>
-          <Separator className="my-4 bg-surface-container-low" />
+        <ContentWorkspace
+          form={{
+            homepageContent: form.homepageContent,
+            circuitsPageContent: form.circuitsPageContent,
+            destinationsPageContent: form.destinationsPageContent,
+            aboutPageContent: form.aboutPageContent,
+          }}
+          onChange={updateLocalizedField}
+        />
 
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                Numero WhatsApp
-              </Label>
-              <Input
-                type="tel"
-                value={form.whatsapp}
-                onChange={(event) => updateField('whatsapp', event.target.value)}
-                placeholder="+221 77 000 00 00"
-                className="rounded-xl"
-              />
-              <p className="text-xs text-on-surface-variant">
-                Ce numero sera utilise pour le bouton WhatsApp sur le site public.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                Email de contact
-              </Label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(event) => updateField('email', event.target.value)}
-                placeholder="contact@example.com"
-                className="rounded-xl"
-              />
-              <p className="text-xs text-on-surface-variant">
-                Les notifications de contact seront envoyees a cette adresse.
-              </p>
-            </div>
+        <div className="flex flex-col gap-4 rounded-[1.5rem] bg-surface-container-lowest p-5 shadow-ambient sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-on-surface">
+              Les changements restent locaux tant que vous n enregistrez pas.
+            </p>
+            <p className="mt-1 text-sm text-on-surface-variant">
+              Utilisez ce bouton une fois votre page et votre langue verifiees.
+            </p>
           </div>
-        </div>
 
-        <div className="rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
-          <div className="flex items-start gap-3">
-            <div className="inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
-              <FileText size={20} />
-            </div>
-            <div>
-              <h2 className="font-heading text-lg font-bold text-on-surface">
-                Contenu editorial public
-              </h2>
-              <p className="mt-1 text-sm text-on-surface-variant">
-                Les circuits, destinations, services et photos restent geres dans leurs
-                modules respectifs. Ici, vous pilotez aussi votre profil et les textes
-                structurants des pages publiques.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <ContentEditorSection
-          title="Accueil"
-          description="Titres, accroches et appels a l action visibles sur la page d accueil."
-          icon={<FileText size={18} />}
-          content={asLocalizedRecord(form.homepageContent)}
-          fields={homepageFields}
-          defaultOpen
-          onChange={(field, locale, value) =>
-            updateLocalizedField('homepageContent', field, locale, value)
-          }
-        />
-
-        <ContentEditorSection
-          title="Page circuits"
-          description="Hero, circuit mis en avant et bloc d aide de la page des circuits."
-          icon={<FileText size={18} />}
-          content={asLocalizedRecord(form.circuitsPageContent)}
-          fields={circuitsFields}
-          onChange={(field, locale, value) =>
-            updateLocalizedField('circuitsPageContent', field, locale, value)
-          }
-        />
-
-        <ContentEditorSection
-          title="Page destinations"
-          description="Hero, titre de previsualisation et libelles d action pour les destinations."
-          icon={<FileText size={18} />}
-          content={asLocalizedRecord(form.destinationsPageContent)}
-          fields={destinationsFields}
-          onChange={(field, locale, value) =>
-            updateLocalizedField('destinationsPageContent', field, locale, value)
-          }
-        />
-
-        <ContentEditorSection
-          title="Page a propos"
-          description="Profil du guide, hero, citation, histoire et appel a l action final."
-          icon={<FileText size={18} />}
-          content={asLocalizedRecord(form.aboutPageContent)}
-          fields={aboutFields}
-          onChange={(field, locale, value) =>
-            updateLocalizedField('aboutPageContent', field, locale, value)
-          }
-        />
-
-        <div className="flex justify-end">
           <Button
             type="submit"
             disabled={saving || !loaded}

@@ -303,7 +303,7 @@ export default function DestinationsPage() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-2xl rounded-xl">
+        <DialogContent className="max-h-[92vh] sm:max-w-5xl xl:max-w-6xl rounded-xl flex flex-col">
           <DialogHeader>
             <DialogTitle className="font-heading text-lg font-bold text-on-surface">
               {editingId ? 'Modifier la destination' : 'Nouvelle destination'}
@@ -315,7 +315,7 @@ export default function DestinationsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="max-h-[60vh]">
+          <ScrollArea className="flex-1 -mx-4 max-h-[70vh] px-4">
             <form id="destination-form" onSubmit={handleSubmit} className="space-y-5 pr-2">
               {/* General Info */}
               <div className="space-y-4">
