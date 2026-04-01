@@ -23,6 +23,15 @@ export default async function middleware(request: NextRequest) {
   // Refresh Supabase session
   try {
     const supabaseResponse = await updateSession(request);
+
+    if (
+      supabaseResponse.status >= 300 &&
+      supabaseResponse.status < 400 &&
+      supabaseResponse.headers.get('location')
+    ) {
+      return supabaseResponse;
+    }
+
     supabaseResponse.cookies.getAll().forEach((cookie) => {
       intlResponse.cookies.set(cookie.name, cookie.value);
     });

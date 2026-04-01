@@ -35,7 +35,9 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Protect admin routes
-  const isAdminRoute = request.nextUrl.pathname.match(/^\/[a-z]{2}\/dashboard|circuits\/new|destinations\/new|services|media|reservations|settings/);
+  const isAdminRoute = /^\/[a-z]{2}\/dashboard(?:\/.*)?$/.test(
+    request.nextUrl.pathname
+  );
 
   if (isAdminRoute && !user) {
     const locale = request.nextUrl.pathname.split('/')[1] || 'fr';
