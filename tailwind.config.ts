@@ -84,8 +84,8 @@ const config: Config = {
         'on-background': 'var(--theme-on-surface, #1e1b17)',
       },
       fontFamily: {
-        heading: ['Epilogue', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        heading: ['var(--font-heading)', 'sans-serif'],
+        body: ['var(--font-body)', 'sans-serif'],
       },
       fontSize: {
         'display-lg': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],

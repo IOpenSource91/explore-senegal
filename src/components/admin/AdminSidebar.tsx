@@ -29,8 +29,8 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 flex-shrink-0 bg-surface-container-lowest lg:block">
-      <div className="flex h-full flex-col">
+    <aside className="hidden h-screen w-64 flex-shrink-0 border-r border-outline-variant/10 bg-surface-container-lowest lg:block">
+      <div className="flex h-full flex-col overflow-hidden">
         {/* Logo */}
         <div className="px-6 py-6">
           <p className="text-label-md font-semibold uppercase tracking-widest text-primary-container">
@@ -47,28 +47,48 @@ export function AdminSidebar() {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 px-3">
           {sidebarItems.map((item) => {
-            const isActive = pathname.includes(item.href);
+            const isActive =
+              item.href === '/dashboard'
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;
             return (
               <Link
                 key={item.key}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors',
+                  'relative flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-primary-fixed text-on-primary-fixed-variant'
-                    : 'text-on-surface-variant hover:bg-surface-container-low'
+                    ? 'border-primary/15 bg-[linear-gradient(135deg,rgba(156,61,0,0.14),rgba(254,178,52,0.08))] text-on-surface shadow-[0_14px_34px_-26px_rgba(156,61,0,0.55)]'
+                    : 'border-transparent text-on-surface-variant hover:border-outline-variant/25 hover:bg-surface-container-low hover:text-on-surface'
                 )}
               >
-                <Icon size={20} />
-                {t(item.key as any)}
+                <span
+                  className={cn(
+                    'flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200',
+                    isActive
+                      ? 'bg-primary text-white shadow-[0_12px_24px_-16px_rgba(156,61,0,0.8)]'
+                      : 'bg-surface-container-low text-on-surface-variant'
+                  )}
+                >
+                  <Icon size={18} />
+                </span>
+                <span className="flex-1">{t(item.key as any)}</span>
+                <span
+                  className={cn(
+                    'h-2.5 w-2.5 rounded-full transition-all duration-200',
+                    isActive
+                      ? 'bg-primary shadow-[0_0_0_6px_rgba(156,61,0,0.08)]'
+                      : 'bg-transparent'
+                  )}
+                />
               </Link>
             );
           })}
         </nav>
 
         {/* Quick action */}
-        <div className="p-4">
+        <div className="mt-auto p-4">
           <div className="rounded-xl bg-secondary-container/20 p-4">
             <p className="text-label-md font-semibold uppercase tracking-wider text-on-surface-variant">
               Action interne

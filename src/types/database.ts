@@ -93,6 +93,19 @@ export interface Contact {
   created_at: string;
 }
 
+export interface SiteSettings {
+  id: string;
+  theme: string;
+  site_name: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  homepage_content: Json | null;
+  circuits_page_content: Json | null;
+  destinations_page_content: Json | null;
+  about_page_content: Json | null;
+  updated_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -130,6 +143,11 @@ export interface Database {
         Row: Contact;
         Insert: Omit<Contact, 'id' | 'created_at'> & { id?: string; created_at?: string };
         Update: Partial<Omit<Contact, 'id' | 'created_at'>>;
+      };
+      site_settings: {
+        Row: SiteSettings;
+        Insert: Omit<SiteSettings, 'updated_at'> & { updated_at?: string };
+        Update: Partial<Omit<SiteSettings, 'id' | 'updated_at'>>;
       };
     };
     Views: Record<string, never>;

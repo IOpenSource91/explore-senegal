@@ -16,6 +16,7 @@ import {
   Trash2,
 } from 'lucide-react';
 
+import { AdminPageLoader } from '@/components/admin/AdminPageLoader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -158,11 +159,7 @@ export default function ReservationsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#9c3d00] border-t-transparent" />
-      </div>
-    );
+    return <AdminPageLoader />;
   }
 
   return (
@@ -178,7 +175,7 @@ export default function ReservationsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="mt-6 flex flex-wrap gap-1.5 rounded-xl bg-surface-container-low/60 p-1.5">
+      <div className="mt-6 inline-flex flex-wrap gap-1.5 rounded-lg border border-outline-variant/20 bg-surface-container-low/45 p-1.5">
         {FILTERS.map((f) => (
           <Button
             key={f.key}
@@ -186,8 +183,8 @@ export default function ReservationsPage() {
             size="sm"
             onClick={() => setFilter(f.key)}
             className={cn(
-              'rounded-lg transition-all',
-              filter === f.key && 'gradient-primary text-white shadow-ambient'
+              'rounded-md px-4 transition-all',
+              filter === f.key && 'gradient-primary text-white shadow-[0_12px_28px_-20px_rgba(156,61,0,0.7)]'
             )}
           >
             {f.label}
@@ -196,11 +193,11 @@ export default function ReservationsPage() {
       </div>
 
       {/* Table */}
-      <div className="mt-6 rounded-xl bg-surface-container-lowest shadow-ambient overflow-hidden">
+      <div className="mt-6 overflow-hidden rounded-[1rem] border border-outline-variant/18 bg-surface-container-lowest shadow-[0_28px_70px_-52px_rgba(74,42,16,0.42)]">
         {contacts.length > 0 ? (
-          <Table>
+          <Table className="[&_td]:px-3 [&_td]:py-4 [&_th]:px-3 [&_th]:py-3">
             <TableHeader>
-              <TableRow className="border-none bg-surface-container-low/40">
+              <TableRow className="border-b border-outline-variant/14 bg-surface-container-low/28">
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Nom</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Contact</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Statut</TableHead>
@@ -221,7 +218,7 @@ export default function ReservationsPage() {
                       animate="visible"
                       exit="exit"
                       layout
-                      className="border-none cursor-pointer transition-colors hover:bg-surface-container-low/30"
+                      className="cursor-pointer border-b border-outline-variant/12 transition-colors hover:bg-surface-container-low/22"
                       onClick={() => openDetail(contact)}
                     >
                       <TableCell>
@@ -251,7 +248,7 @@ export default function ReservationsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={statusInfo.variant} className="rounded-lg">
+                        <Badge variant={statusInfo.variant} className="h-6 rounded-md px-2.5">
                           <span className={cn('mr-1 inline-block h-1.5 w-1.5 rounded-full', statusInfo.dotColor)} />
                           {statusInfo.label}
                         </Badge>
@@ -267,12 +264,12 @@ export default function ReservationsPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger
                             render={
-                              <Button variant="ghost" size="icon-sm" className="rounded-lg" />
+                              <Button variant="ghost" size="icon-sm" className="rounded-md" />
                             }
                           >
                             <MoreHorizontal size={16} />
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="rounded-xl">
+                          <DropdownMenuContent align="end" className="rounded-lg">
                             <DropdownMenuLabel>Changer le statut</DropdownMenuLabel>
                             {Object.entries(STATUS_CONFIG)
                               .filter(([key]) => key !== (contact.status || 'new'))
@@ -349,7 +346,7 @@ export default function ReservationsPage() {
                   {selectedContact.email && (
                     <a
                       href={`mailto:${selectedContact.email}`}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-low/60 px-3 py-1.5 transition-colors hover:bg-surface-container-low"
+                      className="inline-flex items-center gap-1.5 rounded-md bg-surface-container-low/60 px-3 py-1.5 transition-colors hover:bg-surface-container-low"
                     >
                       <Mail size={14} className="text-[#0c6475]" />
                       {selectedContact.email}
@@ -358,14 +355,14 @@ export default function ReservationsPage() {
                   {selectedContact.phone && (
                     <a
                       href={`tel:${selectedContact.phone}`}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-low/60 px-3 py-1.5 transition-colors hover:bg-surface-container-low"
+                      className="inline-flex items-center gap-1.5 rounded-md bg-surface-container-low/60 px-3 py-1.5 transition-colors hover:bg-surface-container-low"
                     >
                       <Phone size={14} className="text-[#0c6475]" />
                       {selectedContact.phone}
                     </a>
                   )}
                   {selectedContact.tours && (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-low/60 px-3 py-1.5">
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-container-low/60 px-3 py-1.5">
                       <CalendarCheck size={14} className="text-[#feb234]" />
                       {selectedContact.tours.name}
                     </span>
@@ -373,7 +370,7 @@ export default function ReservationsPage() {
                 </div>
 
                 {selectedContact.message && (
-                  <div className="rounded-xl bg-surface-container-low/40 p-4">
+                  <div className="rounded-lg bg-surface-container-low/40 p-4">
                     <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                       <MessageSquare size={12} />
                       Message
@@ -397,7 +394,7 @@ export default function ReservationsPage() {
                           changeStatus(selectedContact.id, key);
                           setSelectedContact({ ...selectedContact, status: key });
                         }}
-                        className="rounded-lg"
+                        className="rounded-md"
                       >
                         <span className={cn('mr-1 h-2 w-2 rounded-full', config.dotColor)} />
                         Marquer {config.label.toLowerCase()}

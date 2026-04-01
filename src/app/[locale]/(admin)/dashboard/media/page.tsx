@@ -1,6 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type ChangeEvent,
+  type DragEvent,
+} from 'react';
 import { createAdminClient as createClient } from '@/lib/supabase/admin-client';
 import { useRouter } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
@@ -10,13 +17,17 @@ import {
   Image as ImageIcon,
   Upload,
   Film,
+  Loader2,
   Trash2,
   ExternalLink,
   Copy,
+  X,
 } from 'lucide-react';
 
+import { AdminPageLoader } from '@/components/admin/AdminPageLoader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +51,14 @@ interface MediaItem {
   destinations?: { name: string } | null;
 }
 
+interface PendingUploadItem {
+  id: string;
+  file: File;
+  previewUrl: string;
+  type: 'image' | 'video';
+  customName: string;
+}
+
 const cardVariants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: (i: number) => ({
@@ -59,6 +78,13 @@ export default function MediaPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [pendingUploads, setPendingUploads] = useState<PendingUploadItem[]>([]);
+  const [altTextDraft, setAltTextDraft] = useState('');
+  const [savingAltText, setSavingAltText] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingUploadsRef = useRef<PendingUploadItem[]>([]);
 
   const fetchMedia = useCallback(async () => {
     const { data } = await supabase
@@ -73,8 +99,21 @@ export default function MediaPage() {
     fetchMedia();
   }, [fetchMedia]);
 
+  useEffect(() => {
+    pendingUploadsRef.current = pendingUploads;
+  }, [pendingUploads]);
+
+  useEffect(() => {
+    return () => {
+      pendingUploadsRef.current.forEach((item) => {
+        URL.revokeObjectURL(item.previewUrl);
+      });
+    };
+  }, []);
+
   function openDetail(media: MediaItem) {
     setSelectedMedia(media);
+    setAltTextDraft(media.alt_text ?? '');
     setDetailOpen(true);
   }
 
@@ -104,6 +143,212 @@ export default function MediaPage() {
     toast.success('URL copiee');
   }
 
+  async function handleSaveAltText() {
+    if (!selectedMedia) {
+      return;
+    }
+
+    setSavingAltText(true);
+
+    const nextAltText = altTextDraft.trim() || null;
+    const { error } = await supabase
+      .from('media')
+      .update({ alt_text: nextAltText })
+      .eq('id', selectedMedia.id);
+
+    if (error) {
+      toast.error(error.message);
+      setSavingAltText(false);
+      return;
+    }
+
+    const updatedMedia = {
+      ...selectedMedia,
+      alt_text: nextAltText,
+    };
+
+    setSelectedMedia(updatedMedia);
+    setMediaItems((current) =>
+      current.map((item) =>
+        item.id === selectedMedia.id ? { ...item, alt_text: nextAltText } : item
+      )
+    );
+
+    toast.success('Texte alternatif enregistre');
+    setSavingAltText(false);
+    router.refresh();
+  }
+
+  function normalizeBaseName(fileName: string) {
+    return fileName.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+  }
+
+  function formatFileSize(size: number) {
+    if (size >= 1024 * 1024) {
+      return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    return `${Math.max(1, Math.round(size / 1024))} KB`;
+  }
+
+  function addPendingFiles(files: File[]) {
+    const validFiles = files.filter(
+      (file) => file.type.startsWith('image/') || file.type.startsWith('video/')
+    );
+
+    const invalidCount = files.length - validFiles.length;
+
+    if (invalidCount > 0) {
+      toast.error(
+        invalidCount === 1
+          ? '1 fichier a ete ignore car son format n est pas supporte'
+          : `${invalidCount} fichiers ont ete ignores car leur format n est pas supporte`
+      );
+    }
+
+    if (validFiles.length === 0) {
+      return;
+    }
+
+    setPendingUploads((current) => [
+      ...current,
+      ...validFiles.map<PendingUploadItem>((file, index) => ({
+        id: `${file.name}-${file.size}-${file.lastModified}-${Date.now()}-${index}`,
+        file,
+        previewUrl: URL.createObjectURL(file),
+        type: file.type.startsWith('video/') ? 'video' : 'image',
+        customName: normalizeBaseName(file.name),
+      })),
+    ]);
+  }
+
+  function removePendingUpload(id: string) {
+    setPendingUploads((current) => {
+      const item = current.find((entry) => entry.id === id);
+      if (item) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+
+      return current.filter((entry) => entry.id !== id);
+    });
+  }
+
+  function clearPendingUploads() {
+    setPendingUploads((current) => {
+      current.forEach((item) => {
+        URL.revokeObjectURL(item.previewUrl);
+      });
+
+      return [];
+    });
+  }
+
+  function updatePendingName(id: string, value: string) {
+    setPendingUploads((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, customName: value } : item
+      )
+    );
+  }
+
+  async function handleUploadPending() {
+    if (pendingUploads.length === 0) {
+      return;
+    }
+
+    setUploading(true);
+
+    const formData = new FormData();
+    pendingUploads.forEach((item) => {
+      formData.append('files', item.file);
+      formData.append('customNames', item.customName.trim());
+    });
+
+    try {
+      const response = await fetch('/api/admin/media/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            error?: string;
+            uploadedCount?: number;
+            failed?: Array<{ name: string; error: string }>;
+          }
+        | null;
+
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Televersement impossible');
+      }
+
+      const uploadedCount = payload?.uploadedCount ?? pendingUploads.length;
+      const failed = payload?.failed ?? [];
+
+      if (uploadedCount > 0) {
+        toast.success(
+          uploadedCount === 1
+            ? '1 fichier televerse dans la mediatheque'
+            : `${uploadedCount} fichiers televerses dans la mediatheque`
+        );
+      }
+
+      if (failed.length > 0) {
+        toast.error(
+          failed.length === 1
+            ? `1 fichier a echoue: ${failed[0].name}`
+            : `${failed.length} fichiers n ont pas pu etre televerses`
+        );
+      }
+
+      await fetchMedia();
+      clearPendingUploads();
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Televersement impossible'
+      );
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleFileInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    addPendingFiles(files);
+    event.target.value = '';
+  }
+
+  function handleOpenFilePicker() {
+    if (!uploading) {
+      fileInputRef.current?.click();
+    }
+  }
+
+  function handleDragOver(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    if (!uploading) {
+      setDragActive(true);
+    }
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragActive(false);
+  }
+
+  function handleDrop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragActive(false);
+
+    if (uploading) {
+      return;
+    }
+
+    const files = Array.from(event.dataTransfer.files ?? []);
+    addPendingFiles(files);
+  }
+
   function getLinkedName(media: MediaItem): string | null {
     if (media.tours) {
       return media.tours.name || null;
@@ -115,11 +360,7 @@ export default function MediaPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#9c3d00] border-t-transparent" />
-      </div>
-    );
+    return <AdminPageLoader />;
   }
 
   return (
@@ -135,24 +376,199 @@ export default function MediaPage() {
       </div>
 
       {/* Upload Zone */}
-      <div className="mt-8 group rounded-xl bg-surface-container-lowest p-10 text-center shadow-ambient transition-all hover:shadow-lg cursor-pointer">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept="image/*,video/*"
+        className="hidden"
+        onChange={handleFileInputChange}
+      />
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleOpenFilePicker}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleOpenFilePicker();
+          }
+        }}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={cn(
+          'group mt-8 cursor-pointer rounded-xl bg-surface-container-lowest p-10 text-center shadow-ambient transition-all',
+          uploading
+            ? 'pointer-events-none opacity-80'
+            : 'hover:shadow-lg',
+          dragActive
+            ? 'ring-2 ring-primary ring-offset-2 ring-offset-surface-container-low'
+            : ''
+        )}
+      >
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#feb234]/10 text-[#feb234] transition-transform group-hover:scale-110">
-          <Upload size={28} />
+          {uploading ? (
+            <Loader2 size={28} className="animate-spin" />
+          ) : (
+            <Upload size={28} />
+          )}
         </div>
         <p className="mt-4 font-heading text-body-lg font-semibold text-on-surface">
-          Zone de telechargement
+          {uploading
+            ? 'Televersement en cours...'
+            : pendingUploads.length > 0
+              ? 'Ajoutez d autres fichiers ou lancez l envoi'
+              : 'Zone de telechargement'}
         </p>
         <p className="mt-1 text-body-md text-on-surface-variant">
           Glissez-deposez vos fichiers ici ou cliquez pour selectionner.
         </p>
+        <p className="mt-1 text-sm text-on-surface-variant/70">
+          Formats acceptes: JPG, PNG, WEBP, GIF, MP4 et autres medias standards.
+        </p>
         <Button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            handleOpenFilePicker();
+          }}
+          disabled={uploading}
           className="mt-4 rounded-xl gradient-primary px-5 py-2.5 text-white shadow-ambient"
           size="lg"
         >
-          <Upload size={16} />
-          Selectionner des fichiers
+          {uploading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Upload size={16} />
+          )}
+          {uploading
+            ? 'Televersement...'
+            : pendingUploads.length > 0
+              ? 'Ajouter des fichiers'
+              : 'Selectionner des fichiers'}
         </Button>
       </div>
+
+      {pendingUploads.length > 0 && (
+        <div className="mt-8 rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 className="font-heading text-xl font-bold text-on-surface">
+                Apercu avant envoi
+              </h2>
+              <p className="mt-1 text-sm text-on-surface-variant">
+                Verifiez le groupe d images, renommez chaque fichier si besoin, puis
+                lancez le televersement.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={clearPendingUploads}
+                disabled={uploading}
+                className="rounded-xl"
+              >
+                <X size={16} />
+                Vider la selection
+              </Button>
+              <Button
+                type="button"
+                onClick={() => void handleUploadPending()}
+                disabled={uploading}
+                className="rounded-xl gradient-primary px-5 text-white shadow-ambient"
+              >
+                {uploading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Upload size={16} />
+                )}
+                {uploading
+                  ? 'Televersement...'
+                  : `Televerser ${pendingUploads.length} fichier${
+                      pendingUploads.length > 1 ? 's' : ''
+                    }`}
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {pendingUploads.map((item) => (
+              <div
+                key={item.id}
+                className="overflow-hidden rounded-[1.25rem] border border-outline-variant/30 bg-surface-container-low"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-surface-container">
+                  {item.type === 'image' ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.previewUrl}
+                      alt={item.customName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <video
+                      src={item.previewUrl}
+                      className="h-full w-full object-cover"
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => removePendingUpload(item.id)}
+                    disabled={uploading}
+                    className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                  >
+                    <X size={16} />
+                  </button>
+
+                  <div className="absolute bottom-3 left-3 flex gap-2">
+                    <Badge className="rounded-full bg-white/85 text-[#7a3100] shadow-sm">
+                      {item.type === 'image' ? 'Image' : 'Video'}
+                    </Badge>
+                    <Badge className="rounded-full bg-black/45 text-white backdrop-blur-sm">
+                      {formatFileSize(item.file.size)}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="space-y-3 p-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+                      Nom actuel
+                    </p>
+                    <p className="mt-1 text-sm text-on-surface">{item.file.name}</p>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-on-surface-variant">
+                      Renommer avant envoi
+                    </label>
+                    <input
+                      type="text"
+                      value={item.customName}
+                      onChange={(event) =>
+                        updatePendingName(item.id, event.target.value)
+                      }
+                      disabled={uploading}
+                      className="mt-2 h-10 w-full rounded-xl border border-outline-variant/35 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/20"
+                      placeholder="Nom de l image"
+                    />
+                    <p className="mt-2 text-xs text-on-surface-variant">
+                      L extension est conservee automatiquement.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Media Grid (masonry-like with varied heights) */}
       <div className="mt-8 columns-2 gap-4 sm:columns-3 lg:columns-4 [&>*]:mb-4">
@@ -258,14 +674,21 @@ export default function MediaPage() {
 
                 {/* Info */}
                 <div className="space-y-2">
-                  {selectedMedia.alt_text && (
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                        Texte alternatif
-                      </p>
-                      <p className="text-sm text-on-surface">{selectedMedia.alt_text}</p>
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                      Texte alternatif
+                    </p>
+                    <Textarea
+                      value={altTextDraft}
+                      onChange={(event) => setAltTextDraft(event.target.value)}
+                      rows={3}
+                      className="mt-2 rounded-xl bg-surface-container-low"
+                      placeholder="Decrivez l image pour l accessibilite et le SEO"
+                    />
+                    <p className="mt-2 text-xs text-on-surface-variant">
+                      Ce texte est utilise pour decrire l image sur le site.
+                    </p>
+                  </div>
                   {getLinkedName(selectedMedia) && (
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
@@ -300,6 +723,15 @@ export default function MediaPage() {
               </div>
 
               <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => void handleSaveAltText()}
+                  disabled={savingAltText}
+                  className="rounded-xl"
+                >
+                  {savingAltText && <Loader2 size={14} className="animate-spin" />}
+                  Enregistrer le texte alternatif
+                </Button>
                 <Button
                   variant="destructive"
                   onClick={openDeleteFromDetail}

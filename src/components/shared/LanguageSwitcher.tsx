@@ -32,7 +32,7 @@ export function LanguageSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-xl bg-surface-container px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high"
+        className="flex items-center gap-1.5 rounded-full bg-surface-container-low px-3.5 py-2.5 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high"
         aria-label="Change language"
       >
         <Globe size={16} />
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 min-w-[140px] overflow-hidden rounded-xl bg-surface-container-lowest shadow-ambient">
+        <div className="surface-panel absolute right-0 top-full z-20 mt-2 min-w-[140px] overflow-hidden rounded-2xl">
           {locales.map((l) => (
             <button
               key={l}

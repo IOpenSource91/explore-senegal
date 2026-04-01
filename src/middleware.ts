@@ -1,11 +1,17 @@
 import createMiddleware from 'next-intl/middleware';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { routing } from '@/i18n/routing';
 import { updateSession } from '@/lib/supabase/middleware';
 
 const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/fr';
+    return NextResponse.redirect(url);
+  }
+
   // i18n routing (handles / → /fr, locale prefixing, etc.)
   const intlResponse = intlMiddleware(request);
 

@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Layers, Pencil, Trash2 } from 'lucide-react';
 
+import { AdminPageLoader } from '@/components/admin/AdminPageLoader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -170,11 +171,7 @@ export default function ServicesPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#9c3d00] border-t-transparent" />
-      </div>
-    );
+    return <AdminPageLoader />;
   }
 
   return (

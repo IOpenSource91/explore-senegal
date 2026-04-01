@@ -26,6 +26,11 @@ export const metadata: Metadata = {
   title: 'Explore Sénégal',
   description:
     'Circuits authentiques au Sénégal avec un guide local passionné.',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default async function RootLayout({
