@@ -8,6 +8,7 @@ import {
   type ChangeEvent,
 } from 'react';
 import {
+  Check,
   Image as ImageIcon,
   Loader2,
   RefreshCw,
@@ -117,6 +118,14 @@ export function AdminImagePicker({
 
     return haystack.includes(query);
   });
+
+  function getMediaTitle(item: MediaLibraryItem, index: number) {
+    return item.alt_text?.trim() || `Image ${index + 1}`;
+  }
+
+  function getMediaFileLabel(item: MediaLibraryItem) {
+    return item.url.split('/').pop()?.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') || 'Image';
+  }
 
   function selectImage(mediaItem: MediaLibraryItem) {
     setSelectedMediaId(mediaItem.id);
@@ -341,7 +350,7 @@ export function AdminImagePicker({
               </p>
             </div>
             <span className="rounded-full bg-background px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              {filteredItems.length}/{mediaItems.length}
+              {filteredItems.length} image{filteredItems.length > 1 ? 's' : ''}
             </span>
           </div>
 
@@ -355,73 +364,91 @@ export function AdminImagePicker({
             />
           </div>
 
-          <ScrollArea className="mt-4 h-[34rem] pr-3">
-          {mediaLoading ? (
-            <div className="flex min-h-44 items-center justify-center">
-              <Loader2 className="size-5 animate-spin text-[#9c3d00]" />
-            </div>
-          ) : filteredItems.length > 0 ? (
-            <div className="space-y-3">
-              {filteredItems.map((item, index) => {
-                const isSelected =
-                  selectedMediaId === item.id || value === item.url;
+          <ScrollArea className="mt-4 h-[24rem] pr-2 md:h-[26rem] xl:h-[28rem]">
+            {mediaLoading ? (
+              <div className="flex min-h-44 items-center justify-center">
+                <Loader2 className="size-5 animate-spin text-[#9c3d00]" />
+              </div>
+            ) : filteredItems.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {filteredItems.map((item, index) => {
+                  const isSelected =
+                    selectedMediaId === item.id || value === item.url;
+                  const title = getMediaTitle(item, index);
+                  const fileLabel = getMediaFileLabel(item);
 
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => selectImage(item)}
-                    className={cn(
-                      'grid overflow-hidden rounded-xl border bg-background text-left transition-all hover:border-[#9c3d00]/40 hover:shadow-sm sm:grid-cols-[9rem_minmax(0,1fr)]',
-                      isSelected
-                        ? 'border-[#9c3d00] ring-2 ring-[#9c3d00]/20'
-                        : 'border-border/70'
-                    )}
-                  >
-                    <div className="relative h-32 overflow-hidden bg-muted/30 sm:h-full">
-                      <img
-                        src={item.url}
-                        alt={item.alt_text || `Image ${index + 1}`}
-                        className="size-full object-cover"
-                      />
-                      {isSelected ? (
-                        <span className="absolute right-2 top-2 rounded-full bg-[#9c3d00] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                          Choisie
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => selectImage(item)}
+                      className={cn(
+                        'group overflow-hidden rounded-[1.15rem] border bg-background text-left transition-all hover:-translate-y-0.5 hover:border-[#9c3d00]/45 hover:shadow-[0_18px_30px_-24px_rgba(156,61,0,0.65)]',
+                        isSelected
+                          ? 'border-[#9c3d00] shadow-[0_18px_34px_-26px_rgba(156,61,0,0.7)] ring-2 ring-[#9c3d00]/20'
+                          : 'border-border/70'
+                      )}
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
+                        <img
+                          src={item.url}
+                          alt={title}
+                          className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                        <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                          {item.created_at
+                            ? new Date(item.created_at).toLocaleDateString('fr-FR')
+                            : 'Mediatheque'}
                         </span>
-                      ) : null}
-                    </div>
-                    <div className="flex min-w-0 flex-col justify-between p-3">
-                      <div>
-                        <p className="truncate text-sm font-medium text-foreground">
-                        {item.alt_text?.trim() || `Image ${index + 1}`}
-                        </p>
-                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                          {item.url.split('/').pop()?.replace(/[-_]+/g, ' ') || 'Image'}
-                        </p>
+                        {isSelected ? (
+                          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-[#9c3d00] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                            <Check className="size-3" />
+                            Active
+                          </span>
+                        ) : null}
                       </div>
-                      <p className="mt-3 text-xs text-muted-foreground">
-                        {item.created_at
-                          ? new Date(item.created_at).toLocaleDateString('fr-FR')
-                          : 'Mediatheque'}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="flex min-h-44 flex-col items-center justify-center gap-2 text-center">
-              <ImageIcon className="size-6 text-muted-foreground/50" />
-              <p className="text-sm font-medium text-foreground">
-                {search.trim() ? 'Aucun resultat' : 'Aucune image disponible'}
-              </p>
-              <p className="max-w-sm text-xs text-muted-foreground">
-                {search.trim()
-                  ? 'Essayez un autre mot-cle pour retrouver une image.'
-                  : 'Televersez une premiere image pour l utiliser ensuite dans les formulaires admin.'}
-              </p>
-            </div>
-          )}
+
+                      <div className="space-y-2 p-3.5">
+                        <p className="line-clamp-2 text-sm font-semibold leading-5 text-foreground">
+                          {title}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {fileLabel}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                            Mediatheque
+                          </span>
+                          <span
+                            className={cn(
+                              'rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em]',
+                              isSelected
+                                ? 'bg-[#9c3d00]/10 text-[#9c3d00]'
+                                : 'bg-muted text-foreground/75'
+                            )}
+                          >
+                            {isSelected ? 'Choisie' : 'Choisir'}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex min-h-44 flex-col items-center justify-center gap-2 text-center">
+                <ImageIcon className="size-6 text-muted-foreground/50" />
+                <p className="text-sm font-medium text-foreground">
+                  {search.trim() ? 'Aucun resultat' : 'Aucune image disponible'}
+                </p>
+                <p className="max-w-sm text-xs text-muted-foreground">
+                  {search.trim()
+                    ? 'Essayez un autre mot-cle pour retrouver une image.'
+                    : 'Televersez une premiere image pour l utiliser ensuite dans les formulaires admin.'}
+                </p>
+              </div>
+            )}
           </ScrollArea>
         </div>
       </div>

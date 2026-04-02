@@ -273,7 +273,7 @@ function TourFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[92vh] sm:max-w-5xl xl:max-w-6xl flex flex-col"
+        className="flex max-h-[92vh] flex-col overflow-hidden sm:max-w-5xl xl:max-w-6xl"
         showCloseButton
       >
         <DialogHeader>
@@ -307,8 +307,8 @@ function TourFormDialog({
         </div>
 
         {/* Form sections */}
-        <ScrollArea className="flex-1 -mx-4 px-4 max-h-[70vh]">
-          <div className="space-y-5 py-2">
+        <ScrollArea className="min-h-0 flex-1 -mx-4 px-4">
+          <div className="space-y-5 py-2 pb-6">
             <AnimatePresence mode="wait">
               {section === 'general' && (
                 <motion.div
@@ -573,7 +573,7 @@ function TourFormDialog({
                       onChange={(value) => update('cover_image', value)}
                       uploadBaseName={form.name}
                       label="Image de couverture"
-                      description="Selectionnez une image de la mediatheque ou televersez-en une nouvelle. Aucun collage d URL n est necessaire ici."
+                      description="Selectionnez une image de la mediatheque ou televersez-en une nouvelle."
                     />
                   </FieldGroup>
 
@@ -595,7 +595,7 @@ function TourFormDialog({
           </div>
         </ScrollArea>
 
-        <DialogFooter>
+        <DialogFooter className="z-10 border-t border-border/60 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
           <Button
             variant="outline"
             size="sm"
